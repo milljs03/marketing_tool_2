@@ -1,54 +1,76 @@
 import { auth, db } from './config/firebase-config.js';
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs, setDoc, deleteDoc } from "firebase/firestore";
 
-// Import Main Page Entry Points
+// Import Pages
 import { renderLogin } from './pages/auth/login.js';
 import { renderClientDashboard } from './pages/client/client-dashboard.js';
 import { renderAdminDashboard } from './pages/admin/admin-dashboard.js';
-import { renderNavbar } from './components/navbar.js';
 
-// DOM Elements
+
 const appContent = document.getElementById('app-content');
-const navContainer = document.getElementById('navbar-container');
 
-// Main Application Logic
+// 1. Listen for Auth Changes
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         console.log("User authenticated:", user.email);
         
-        // 1. Fetch User Role from Firestore
-        // We need this to decide which "App" to show (Kitchen vs Dining Room)
-        let role = 'client'; // Default safety
-        
-        try {
-            const userDocRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userDocRef);
+        let role = 'client'; 
+        let userProfile = null;
 
-            if (userSnap.exists() && userSnap.data().role) {
-                role = userSnap.data().role;
+        try {
+            // A. Check for Profile at correct UID path
+            const userDocRef = doc(db, "users", user.uid);
+            let userSnap = await getDoc(userDocRef);
+
+            // B. If not found, check for "Invite Document" via Email
+            // (This handles the first login after an Admin invite)
+            if (!userSnap.exists()) {
+                console.log("Profile not found at UID. Searching for invite...");
+                const q = query(collection(db, "users"), where("email", "==", user.email));
+                const querySnap = await getDocs(q);
+
+                if (!querySnap.empty) {
+                    console.log("Invite found! Migrating profile to UID...");
+                    const inviteDoc = querySnap.docs[0];
+                    const inviteData = inviteDoc.data();
+                    
+                    // MIGRATION: Copy invite data to correct UID doc
+                    await setDoc(userDocRef, {
+                        ...inviteData,
+                        id: user.uid, // Ensure ID matches
+                        status: 'active',
+                        migratedAt: new Date()
+                    });
+                    
+                    // Delete the old invite doc to prevent duplicates
+                    await deleteDoc(inviteDoc.ref);
+                    
+                    // Refresh Snapshot
+                    userSnap = await getDoc(userDocRef);
+                }
             }
+
+            if (userSnap.exists()) {
+                userProfile = userSnap.data();
+                role = userProfile.role || 'client';
+            }
+
         } catch (error) {
-            console.error("Error fetching user role:", error);
-            // Fallback: stay as client or show error
+            console.error("Error fetching user profile:", error);
         }
 
-        // 2. Render Navigation
-        renderNavbar(user, role);
+        // Pass the FULL merged user object (Auth + Firestore Data)
+        const fullUser = { ...user, ...(userProfile || {}) };
+
         
-        // 3. Route to specific Dashboard
-        // IMPORTANT: We pass the 'user' object to these functions so they can 
-        // access uid/email for Audit Logs and Row Level Security.
         if (role === 'admin') {
-            // Loads the Agency Command Center (which now includes Client Manager & Editor)
-            renderAdminDashboard(appContent, user); 
+            renderAdminDashboard(appContent, fullUser);
         } else {
-            // Loads the Client Portal
-            renderClientDashboard(appContent, user);
+            renderClientDashboard(appContent, fullUser);
         }
 
     } else {
-        // User is logged out
         console.log("User not logged in");
         renderNavbar(null, null);
         renderLogin(appContent);

@@ -141,6 +141,31 @@ export function renderAdminDashboard(container, user) {
             };
             const statusClass = statusMap[data.status] || 'status-paused';
 
+            // Special Flags
+            const autoPilotBadge = data.autoPilot ? `<span class="status-badge" style="background: #0f172a; color: #facc15; border: 1px solid #1e293b;">🚀 Auto-Pilot</span>` : '';
+            
+            // Goal Tag
+            const goalTag = data.goal ? `<span style="font-size: 0.7rem; text-transform: uppercase; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: 600;">Goal: ${data.goal}</span>` : '';
+
+            // Detail Snippets (Event / Mailer)
+            let detailsHtml = '';
+            if (data.zips) {
+                detailsHtml = `
+                    <div style="margin-top: 8px; font-size: 0.85rem; background: #eff6ff; padding: 6px; border-radius: 4px; border: 1px solid #dbeafe; color: #1e3a8a;">
+                        <strong>📬 Mailer:</strong> ${data.zips} <br>
+                        <span style="font-size: 0.8rem; opacity: 0.9;">Offer: "${data.offer}"</span>
+                    </div>
+                `;
+            }
+            if (data.eventName) {
+                detailsHtml = `
+                    <div style="margin-top: 8px; font-size: 0.85rem; background: #fdf4ff; padding: 6px; border-radius: 4px; border: 1px solid #f0abfc; color: #701a75;">
+                        <strong>🎟️ Event:</strong> ${data.eventName} <br>
+                        <span style="font-size: 0.8rem; opacity: 0.9;">When: ${data.eventDate}</span>
+                    </div>
+                `;
+            }
+
             const card = document.createElement('div');
             card.className = 'campaign-card';
             
@@ -149,14 +174,22 @@ export function renderAdminDashboard(container, user) {
                 
                 <!-- Info Column -->
                 <div>
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px;">
                         <span class="status-badge ${statusClass}">
                             ${data.status.replace('_', ' ')}
                         </span>
-                        <a href="#" class="edit-link" data-id="${data.id}">Edit Details</a>
+                        ${autoPilotBadge}
+                        ${goalTag}
                     </div>
+                    
                     <h3 style="margin: 0 0 4px 0; font-size: 1.1rem; color: var(--text-main); font-weight: 600;">${data.serviceType}</h3>
                     <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">${data.clientEmail || 'Unknown Client'}</p>
+                    
+                    ${detailsHtml}
+                    
+                    <div style="margin-top: 8px;">
+                        <a href="#" class="edit-link" data-id="${data.id}" style="font-size: 0.8rem;">Edit Full Details &rarr;</a>
+                    </div>
                 </div>
 
                 <!-- Metrics Column -->
@@ -182,6 +215,10 @@ export function renderAdminDashboard(container, user) {
                     ${data.status === 'pending_approval' 
                         ? `<button class="action-btn btn btn-success btn-block" data-id="${data.id}" data-action="active">Approve</button>` 
                         : `<button class="action-btn btn btn-secondary btn-block" data-id="${data.id}" data-action="${data.status === 'active' ? 'paused' : 'active'}">${data.status === 'active' ? 'Pause' : 'Resume'}</button>`
+                    }
+                    ${data.status === 'active' ? 
+                      `<button class="action-btn btn btn-secondary btn-block" style="font-size: 0.75rem;" data-id="${data.id}" data-action="awaiting_client">Request Client Approval</button>` 
+                      : ''
                     }
                 </div>
             `;
@@ -217,16 +254,15 @@ export function renderAdminDashboard(container, user) {
                 const spend = parseFloat(document.getElementById(`spend-${id}`).value) || 0;
                 const leads = parseFloat(document.getElementById(`leads-${id}`).value) || 0;
                 
-                // Visual feedback
                 const originalText = btn.textContent;
-                btn.textContent = "Saved!";
+                btn.textContent = "Saved";
                 btn.style.backgroundColor = "var(--success-color)";
                 
                 await updateDoc(doc(db, "campaigns", id), { spend, leads });
                 
                 setTimeout(() => {
                     btn.textContent = originalText;
-                    btn.style.backgroundColor = ""; // Reset to CSS default
+                    btn.style.backgroundColor = ""; 
                 }, 1500);
             });
         });
