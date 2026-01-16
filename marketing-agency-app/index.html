@@ -5,37 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marketing Portal</title>
     
-    <!-- Google Fonts: Inter -->
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Simple CSS Reset + Font -->
     <style>
-        body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f8fafc; }
+        /* Base Resets */
+        body { margin: 0; padding: 0; box-sizing: border-box; }
         * { box-sizing: border-box; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .hidden { display: none !important; }
         
-        /* Utility Classes for dynamic showing/hiding */
-        #app-content { min-height: 80vh; }
+        /* App Container */
+        #app { min-height: 100vh; display: flex; flex-direction: column; }
+        #app-content { flex: 1; width: 100%; }
+        
+        /* Hide navbar container if empty */
+        #navbar-container:empty { display: none; }
     </style>
     
-    <!-- UPDATED LINK: Using relative path ./css/admin.css to ensure loading in previews -->
+    <!-- LINK BOTH STYLESHEETS (They are scoped or used contextually) -->
     <link rel="stylesheet" href="./css/admin.css">
+    <link rel="stylesheet" href="./css/client.css">
 </head>
 <body>
     <div id="app">
-        <!-- Navigation Component loads here -->
         <nav id="navbar-container"></nav>
         
-        <!-- Main Page Content loads here -->
-        <main id="app-content" class="container">
-            Loading...
+        <!-- Main Content Area -->
+        <main id="app-content">
+            <div style="text-align: center; padding: 50px; color: #666;">Initializing App...</div>
         </main>
     </div>
 
-    <!-- The Brain of the operation -->
     <script type="module" src="/src/app.js"></script>
 </body>
 </html>

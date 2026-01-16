@@ -1,0 +1,227 @@
+/* =========================================
+   Client Portal Theme - "The Dining Room"
+   ========================================= */
+
+:root {
+    --c-primary: #0f4c81;       /* Brand Blue */
+    --c-accent: #3b82f6;        /* Action Blue */
+    --c-bg: #f3f4f6;            /* Light Grey Background */
+    --c-surface: #ffffff;       /* White Cards */
+    --c-text-main: #1f2937;     /* Dark Grey Text */
+    --c-text-muted: #6b7280;    /* Muted Text */
+    --c-border: #e5e7eb;        /* Borders */
+    --c-success: #10b981;       /* Green */
+    --c-warning: #f59e0b;       /* Orange */
+    
+    --radius-lg: 16px;          /* Softer, larger radius for clients */
+    --radius-md: 10px;
+    --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+}
+
+body {
+    background-color: var(--c-bg);
+    color: var(--c-text-main);
+    font-family: 'Inter', sans-serif;
+}
+
+/* --- Layout --- */
+.client-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.client-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--c-border);
+}
+
+.welcome-text h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--c-primary);
+}
+
+.welcome-text p {
+    margin: 5px 0 0 0;
+    color: var(--c-text-muted);
+}
+
+/* --- Navigation --- */
+.client-nav {
+    display: flex;
+    gap: 20px;
+}
+
+.c-nav-btn {
+    background: transparent;
+    border: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--c-text-muted);
+    cursor: pointer;
+    padding: 8px 0;
+    position: relative;
+    transition: color 0.2s;
+}
+
+.c-nav-btn:hover { color: var(--c-primary); }
+
+.c-nav-btn.active {
+    color: var(--c-primary);
+    font-weight: 600;
+}
+
+.c-nav-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--c-accent);
+    border-radius: 2px;
+}
+
+/* --- Scoreboard Cards --- */
+.scoreboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.score-card {
+    background: var(--c-surface);
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    border: 1px solid white;
+    transition: transform 0.2s;
+}
+
+.score-card:hover { transform: translateY(-2px); }
+
+.score-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: var(--c-text-muted);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.score-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--c-text-main);
+    line-height: 1.1;
+}
+
+.score-trend {
+    font-size: 0.85rem;
+    margin-top: 8px;
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: #ecfdf5;
+    color: var(--c-success);
+    font-weight: 500;
+}
+
+/* --- Forms (Request) --- */
+.request-form-card {
+    background: var(--c-surface);
+    padding: 32px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group { margin-bottom: 20px; }
+
+.c-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--c-text-main);
+    margin-bottom: 8px;
+}
+
+.c-input, .c-select, .c-textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--c-border);
+    font-size: 1rem;
+    background: #f9fafb;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.c-input:focus, .c-select:focus, .c-textarea:focus {
+    outline: none;
+    border-color: var(--c-accent);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.c-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.c-btn-primary { background: var(--c-primary); color: white; }
+.c-btn-primary:hover { filter: brightness(115%); }
+
+/* --- Approval List --- */
+.approval-list {
+    display: grid;
+    gap: 16px;
+}
+
+.approval-item {
+    background: var(--c-surface);
+    padding: 20px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--c-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.item-status {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: inline-block;
+}
+.st-waiting { background: #fef3c7; color: #92400e; } /* Needs Admin */
+.st-action { background: #fee2e2; color: #b91c1c; }  /* Needs Client */
+.st-active { background: #d1fae5; color: #065f46; }  /* Live */
+
+.action-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--c-accent);
+    color: white;
+}
